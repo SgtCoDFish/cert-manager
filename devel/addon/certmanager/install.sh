@@ -94,6 +94,7 @@ helm upgrade \
     --set featureGates="${FEATURE_GATES_CONTROLLER//,/\\,}" \
     --set "webhook.extraArgs={--feature-gates=${FEATURE_GATES_WEBHOOK//,/\\,}}" \
     --set "cainjector.extraArgs={--feature-gates=${FEATURE_GATES_CAINJECTOR//,/\\,}}"\
+    --set "containerSecurityContext.capabilities.add={IPC_LOCK}" \
     --set "extraArgs={--dns01-recursive-nameservers=${SERVICE_IP_PREFIX}.16:53,--dns01-recursive-nameservers-only=true}" \
     "$RELEASE_NAME" \
     "$REPO_ROOT/bazel-bin/deploy/charts/cert-manager/cert-manager.tgz"
