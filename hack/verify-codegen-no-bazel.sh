@@ -30,8 +30,7 @@ else
   exit 0
 fi
 
-#tmpfiles=$TEST_TMPDIR/files
-tmpfiles=/tmp/verifytmp
+tmpfiles=$TEST_TMPDIR/files
 
 (
   mkdir -p "$tmpfiles"

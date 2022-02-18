@@ -18,7 +18,7 @@ set -o nounset
 set -o pipefail
 
 if [[ -n "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then # Running inside bazel
-  echo "Updating generated clients..." >&2
+  echo "+++ updating generated clients..." >&2
 elif ! command -v bazel &>/dev/null; then
   echo "Install bazel at https://bazel.build" >&2
   exit 1
