@@ -14,9 +14,18 @@ COSIGN=$(WORKDIR)/bin/tools/cosign
 CMREL=$(WORKDIR)/bin/tools/cmrel
 YQ=$(WORKDIR)/bin/tools/yq
 
+CLIENT_GEN=$(WORKDIR)/bin/tools/client-gen
+CONVERSION_GEN=$(WORKDIR)/bin/tools/conversion-gen
+CONTROLLER_GEN=$(WORKDIR)/bin/tools/controller-gen
+DEEPCOPY_GEN=$(WORKDIR)/bin/tools/deepcopy-gen
+DEFAULTER_GEN=$(WORKDIR)/bin/tools/defaulter-gen
+INFORMER_GEN=$(WORKDIR)/bin/tools/informer-gen
+LISTER_GEN=$(WORKDIR)/bin/tools/lister-gen
+
 HELM_VERSION=3.6.3
 KUBECTL_VERSION=1.22.1
 KIND_VERSION=0.11.1
+CONTROLLER_GEN_VERSION=0.8.0
 COSIGN_VERSION=1.3.1
 CMREL_VERSION=a1e2bad95be9688794fd0571c4c40e88cccf9173
 K8S_RELEASE_NOTES_VERSION=0.7.0
@@ -34,7 +43,7 @@ bin/scratch/tools:
 	@mkdir -p $@
 
 .PHONY: tools
-tools: bin/tools/helm bin/tools/kubectl bin/tools/kind bin/tools/cosign bin/tools/ginkgo bin/tools/cmrel bin/tools/release-notes bin/tools/goimports bin/tools/gotestsum bin/tools/ytt bin/tools/yq
+tools: bin/tools/helm bin/tools/kubectl bin/tools/kind bin/tools/cosign bin/tools/ginkgo bin/tools/cmrel bin/tools/release-notes bin/tools/controller-gen k8s-codegen-tools bin/tools/goimports bin/tools/gotestsum bin/tools/ytt bin/tools/yq
 
 .PHONY: integration-test-tools
 integration-test-tools: bin/tools/etcd bin/tools/kubectl bin/tools/kube-apiserver
@@ -127,6 +136,23 @@ bin/tools/cmrel: | bin/tools
 
 bin/tools/release-notes: | bin/tools
 	GOBIN=$(shell pwd)/$(dir $@) go install k8s.io/release/cmd/release-notes@v$(K8S_RELEASE_NOTES_VERSION)
+
+##################
+# controller-gen #
+##################
+
+bin/tools/controller-gen: | bin/tools
+	GOBIN=$(shell pwd)/$(dir $@) go install sigs.k8s.io/controller-tools/cmd/controller-gen@v$(CONTROLLER_GEN_VERSION)
+
+#####################
+# k8s codegen tools #
+#####################
+
+.PHONY: k8s-codegen-tools
+k8s-codegen-tools: bin/tools/client-gen bin/tools/conversion-gen bin/tools/deepcopy-gen bin/tools/defaulter-gen bin/tools/informer-gen bin/tools/lister-gen
+
+bin/tools/client-gen bin/tools/conversion-gen bin/tools/deepcopy-gen bin/tools/defaulter-gen bin/tools/informer-gen bin/tools/lister-gen:
+	GOBIN=$(shell pwd)/$(dir $@) go install k8s.io/code-generator/cmd/$(notdir $@)@$(K8S_CODEGEN_VERSION)
 
 #############
 # goimports #
