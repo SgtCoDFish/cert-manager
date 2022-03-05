@@ -31,6 +31,19 @@ else
   exit 0
 fi
 
+usage_and_quit() {
+	echo "usage: $0 <path-to-go> <path-to-controller-gen>" >&2
+	exit 1
+}
+
+if [ -z "${1:-}" ]; then
+	usage_and_quit
+fi
+
+if [ -z "${2:-}" ]; then
+	usage_and_quit
+fi
+
 go=$(realpath "$1")
 controllergen="$(realpath "$2")"
 export PATH=$(dirname "$go"):$PATH

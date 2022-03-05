@@ -17,18 +17,39 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-if [[ -n "${TEST_WORKSPACE:-}" ]]; then # Running inside bazel
-  echo "Verifying generated CRD manifests are up-to-date..." >&2
-elif ! command -v bazel &>/dev/null; then
-  echo "Install bazel at https://bazel.build" >&2
-  exit 1
-else
-  (
-    set -o xtrace
-    bazel test --test_output=streamed //hack:verify-crds
-  )
-  exit 0
+if [[ -z "${TEST_WORKSPACE:-}" ]]; then
+	# Not running inside bazel, so create a tmpdir
+	TEST_TMPDIR="$(mktemp -d)"
+	trap "rm -rf ${TEST_TMPDIR}" EXIT
 fi
+
+usage_and_quit() {
+	echo "usage: $0 <update-crds-target> <path-to-go> <path-to-controller-gen> <path-to-yq>" >&2
+	exit 1
+}
+
+if [ -z "${1:-}" ]; then
+	usage_and_quit
+fi
+
+if [ -z "${2:-}" ]; then
+	usage_and_quit
+fi
+
+if [ -z "${3:-}" ]; then
+	usage_and_quit
+fi
+
+if [ -z "${4:-}" ]; then
+	usage_and_quit
+fi
+
+echo "Verifying generated CRD manifests are up-to-date..." >&2
+
+update_crds=$1
+go=$2
+controllergen=$3
+yq=$4
 
 tmpfiles=$TEST_TMPDIR/files
 
@@ -39,9 +60,9 @@ tmpfiles=$TEST_TMPDIR/files
   export BUILD_WORKSPACE_DIRECTORY=$tmpfiles
   export HOME=$(realpath "$TEST_TMPDIR/home")
   unset GOPATH
-  go=$(realpath "$2")
   export PATH=$(dirname "$go"):$PATH
   "$@"
+  $update_crds $go $controllergen
 )
 
 (
