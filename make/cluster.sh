@@ -25,7 +25,7 @@ set -e
 source ./make/kind_images.sh
 
 mode=kind
-k8s_version=1.28
+k8s_version=1.30
 name=kind
 
 help() {
