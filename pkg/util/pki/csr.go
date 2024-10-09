@@ -19,7 +19,6 @@ package pki
 import (
 	"bytes"
 	"crypto"
-	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
@@ -33,6 +32,7 @@ import (
 
 	apiutil "github.com/cert-manager/cert-manager/pkg/api/util"
 	v1 "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
+	"github.com/cert-manager/cert-manager/pkg/cmrand"
 )
 
 // IPAddressesToString converts a slice of IP addresses to strings, which can be useful for
@@ -342,7 +342,7 @@ func GenerateCSR(crt *v1.Certificate, optFuncs ...GenerateCSROption) (*x509.Cert
 // It returns a PEM encoded copy of the Certificate as well as a *x509.Certificate
 // which can be used for reading the encoded values.
 func SignCertificate(template *x509.Certificate, issuerCert *x509.Certificate, publicKey crypto.PublicKey, signerKey interface{}) ([]byte, *x509.Certificate, error) {
-	derBytes, err := x509.CreateCertificate(rand.Reader, template, issuerCert, publicKey, signerKey)
+	derBytes, err := x509.CreateCertificate(cmrand.Reader, template, issuerCert, publicKey, signerKey)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error creating x509 certificate: %s", err.Error())
 	}
@@ -388,7 +388,7 @@ func SignCSRTemplate(caCerts []*x509.Certificate, caKey crypto.Signer, template 
 // EncodeCSR calls x509.CreateCertificateRequest to sign the given CSR template.
 // It returns a DER encoded signed CSR.
 func EncodeCSR(template *x509.CertificateRequest, key crypto.Signer) ([]byte, error) {
-	derBytes, err := x509.CreateCertificateRequest(rand.Reader, template, key)
+	derBytes, err := x509.CreateCertificateRequest(cmrand.Reader, template, key)
 	if err != nil {
 		return nil, fmt.Errorf("error creating x509 certificate: %s", err.Error())
 	}

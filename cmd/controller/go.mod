@@ -14,6 +14,7 @@ replace github.com/cert-manager/cert-manager => ../../
 require (
 	github.com/cert-manager/cert-manager v0.0.0-00010101000000-000000000000
 	github.com/go-logr/logr v1.4.2
+	github.com/google/go-tpm v0.9.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/sync v0.8.0
@@ -79,6 +80,7 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-tpm-tools v0.3.13-0.20230620182252-4639ecce2aba // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/s2a-go v0.1.8 // indirect
 	github.com/google/uuid v1.6.0 // indirect

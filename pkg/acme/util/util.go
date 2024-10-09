@@ -21,6 +21,8 @@ import (
 	"math/big"
 	"net/http"
 	"time"
+
+	"github.com/cert-manager/cert-manager/pkg/cmrand"
 )
 
 const (
@@ -46,7 +48,7 @@ func RetryBackoff(n int, r *http.Request, resp *http.Response) time.Duration {
 	}
 
 	var jitter time.Duration
-	if x, err := rand.Int(rand.Reader, big.NewInt(1000)); err == nil {
+	if x, err := rand.Int(cmrand.Reader, big.NewInt(1000)); err == nil {
 		jitter = (1 + time.Duration(x.Int64())) * time.Millisecond
 	}
 

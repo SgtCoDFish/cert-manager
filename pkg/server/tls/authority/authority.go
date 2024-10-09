@@ -45,6 +45,7 @@ import (
 
 	cmmeta "github.com/cert-manager/cert-manager/internal/apis/meta"
 	cmapi "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
+	"github.com/cert-manager/cert-manager/pkg/cmrand"
 	logf "github.com/cert-manager/cert-manager/pkg/logs"
 	"github.com/cert-manager/cert-manager/pkg/util/pki"
 )
@@ -203,7 +204,7 @@ func (d *DynamicAuthority) Sign(template *x509.Certificate) (*x509.Certificate, 
 		return nil, fmt.Errorf("failed decoding CA private key: %v", err)
 	}
 
-	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	serialNumber, err := rand.Int(cmrand.Reader, serialNumberLimit)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +355,7 @@ func (d *DynamicAuthority) regenerateCA(ctx context.Context, s *corev1.Secret) e
 		return err
 	}
 
-	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	serialNumber, err := rand.Int(cmrand.Reader, serialNumberLimit)
 	if err != nil {
 		return err
 	}
