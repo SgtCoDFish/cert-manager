@@ -18,7 +18,6 @@ package main
 
 import (
 	"context"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"math"
@@ -43,6 +42,8 @@ type tpmRandReader struct {
 func (r *tpmRandReader) Read(data []byte) (n int, err error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+
+	fmt.Println("reading from TPM")
 
 	if len(data) > math.MaxUint16 {
 		return 0, fmt.Errorf("tpm-rand: number of bytes to read cannot exceed math.MaxInt16")
@@ -69,8 +70,6 @@ func NewTPMRandReader(tpm transport.TPMCloser) *tpmRandReader {
 }
 
 func main() {
-	fmt.Println("hello world")
-
 	theTPM, err := simulator.OpenSimulator()
 	if err != nil {
 		panic(fmt.Errorf("couldn't open TPM simulator: %v", err))
@@ -84,19 +83,6 @@ func main() {
 	}()
 
 	cmrand.Reader = NewTPMRandReader(theTPM)
-
-	buf := make([]byte, 16)
-
-	n, err := cmrand.Reader.Read(buf)
-	if err != nil {
-		panic(fmt.Errorf("failed to get rand: %s", err))
-	}
-
-	if n != 16 {
-		panic("didn't read exactly 16 bytes")
-	}
-
-	fmt.Println("so random lol:", hex.EncodeToString(buf))
 
 	ctx, exit := util.SetupExitHandler(context.Background(), util.GracefulShutdown)
 	defer exit() // This function might call os.Exit, so defer last
